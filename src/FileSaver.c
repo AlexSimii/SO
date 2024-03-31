@@ -5,9 +5,14 @@
 int main( int argc, char *argv[] )  {
 
     if(argc == 2){
-        watch_directory(argv[1]);
+        //watch_directory(argv[1]);
+        save_snapshot(argv[1]);
     }
     else
-        printf("no directory entered\n");
-
+        if(argc == 1)
+            printf("no directory entered\n");
+        else
+            printf("too many arguments\n");
+    
+    return 0;
 }

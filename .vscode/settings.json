@@ -3,6 +3,11 @@
         "errno.h": "c",
         "types.h": "c",
         "fileoperations.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "ctype.h": "c",
+        "stdbool.h": "c",
+        "path.h": "c",
+        "memory_checks.h": "c",
+        "stdlib.h": "c"
     }
 }

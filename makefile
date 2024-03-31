@@ -5,7 +5,7 @@ BUILD_DIR = build
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 DEPS = $(OBJS:.o=.d) 
-EXEC = filesaver
+EXEC = filesaver.elf
 
 
 -include $(DEPS)
