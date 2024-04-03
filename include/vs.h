@@ -1,9 +1,8 @@
 #ifndef VERSION_CONTROLLER
     #define VERSION_CONTROLLER
 
-    #define CACHE_DIR "FileSaverCache"
     #define CACHE_ENTRY_SIZE 500
-    #define INDENT 2
+    #define INDENT 4
 
     #include "fileoperations.h"
     #include "path.h"
@@ -20,6 +19,9 @@
     #include <sys/stat.h>
     #include <unistd.h>
 
-    void watch_directory(const char *dir_name);
-    void save_snapshot(const char *dir_path);
+    //pt open dir
+    #include <dirent.h>
+
+    bool watch_directory(char *dir_path, const char *CACHE_DIR);
+    void save_snapshot(char *dir_path, const char *CACHE_DIR);
 #endif
