@@ -22,6 +22,14 @@
     //pt open dir
     #include <dirent.h>
 
-    bool watch_directory(char *dir_path, const char *CACHE_DIR);
+    enum dir_states{
+        watched,
+        unwatched,
+        NOTdir,
+        NOTpossible
+    };
+
+    enum dir_states is_dir_watched(char *dir_path, const char *CACHE_DIR);
     void save_snapshot(char *dir_path, const char *CACHE_DIR);
+
 #endif

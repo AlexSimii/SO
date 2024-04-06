@@ -1,6 +1,7 @@
 #ifndef CACHE_ENTRY_H
     #define CACHE_ENTRY_H
     #define CACHE_ENTRY_SIZE 500
+    #define SNAPSHOT_CHUNK_SIZE 10//greseala
 
     #include "path.h"
     #include "memory_checks.h"
@@ -15,14 +16,25 @@
     #include <sys/types.h>
     #include <sys/stat.h>
     #include <unistd.h>
-
+    
     typedef struct cache_entry{
         char *text;
     }Cache_entry_class;
 
+    typedef struct snap{
+        Cache_entry_class *arr;
+        int nr_elem;
+        int size;
+    }Snapshot;
+
     void edit_cache_entry(Cache_entry_class *cache_entry, const char *new_entry, bool last_entry);
     void get_cache_entry_from_i_node(Cache_entry_class *cache_entry, struct stat i_node, const Path_class dir_path, int depth, int indent);
     void write_cache_entry_to_file(Cache_entry_class cache_entry, Path_class snap_dir_path, const char *CACHE_DIR);
-    void delete_cache_entry(Cache_entry_class c);
+    void delete_cache_entry(Cache_entry_class *c);
+
+    Snapshot * creeate_snapshot();
+    void increase_size(Snapshot **s);
+    void add_cache_entry(Snapshot *s, Cache_entry_class entry);
+    void delete_snapshot(Snapshot **s);
 
 #endif

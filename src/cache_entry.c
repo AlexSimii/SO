@@ -3,22 +3,19 @@
 
 void write_cache_entry_to_file(Cache_entry_class cache_entry, Path_class snap_dir_path, const char *CACHE_DIR)
 {
-    //printf("write_cache_entry_to_file(%s, %s)\n", cache_entry.text, snap_dir_path.path);// func call
-
+    //fac out dir daca nu e
     Path_class cahe_dir_temp = make_path(CACHE_DIR);
     if(!is_dir(cahe_dir_temp))
     {
         mkdir(cahe_dir_temp.path, 0700);
-        // printf("s o facut dirul pt snapuri %s\n", cahe_dir_temp.path);// func call
     }
     delete_path(cahe_dir_temp);
     
     int file_to_write_cache = open_snapshot_file_for_cache(snap_dir_path);
     int nr_of_bytes = strlen(cache_entry.text) * sizeof(char);
-    // printf("%d file descriptor\n", file_to_write_cache);// func call
     if(write(file_to_write_cache, cache_entry.text, nr_of_bytes) != nr_of_bytes)
     {
-        printf("nu  so scris cat trebe/nu  so scris %s\n", snap_dir_path.path);// func call
+        printf("nu  s o scris cat trebe/nu  so scris %s\n", snap_dir_path.path);// func call
         perror("in write cahche\n");
         exit(EXIT_FAILURE);
     }
@@ -29,7 +26,6 @@ void write_cache_entry_to_file(Cache_entry_class cache_entry, Path_class snap_di
         exit(EXIT_FAILURE);
     }
 }
-
 
 void init_cache_entry(Cache_entry_class *cache_entry)
 {
@@ -87,10 +83,55 @@ void edit_cache_entry(Cache_entry_class *cache_entry, const char *new_entry, boo
         strcat(cache_entry->text, "\n");
 }
 
-void delete_cache_entry(Cache_entry_class c)
+void delete_cache_entry(Cache_entry_class *c)
 {
-    if(c.text != NULL)
-        free(c.text);
+    if(c->text != NULL)
+        free(c->text);
+}
+
+
+Snapshot * creeate_snapshot()
+{
+    Snapshot *s = (Snapshot *)malloc(1 * sizeof(Snapshot));
+    is_null(s, ALOC_TEXT);
+    s-> arr = (Cache_entry_class *)malloc(sizeof(Cache_entry_class) * SNAPSHOT_CHUNK_SIZE);
+    is_null(s->arr, ALOC_TEXT);
+    s->nr_elem = 0;
+    s->size = SNAPSHOT_CHUNK_SIZE;
+
+    return s;
+}
+
+void increase_size(Snapshot **s)
+{
+    Cache_entry_class *temp = (Cache_entry_class *)realloc((*s)->arr, sizeof(Cache_entry_class) * ((*s)->size + SNAPSHOT_CHUNK_SIZE));
+    is_null(temp, REALOC_TEXT);
+    (*s)->arr = temp;
+    (*s)->size += SNAPSHOT_CHUNK_SIZE;
+}
+
+void add_cache_entry(Snapshot *s, Cache_entry_class entry)
+{
+    if(s->nr_elem < s->size)
+    {
+        s->arr[s->nr_elem] = entry;
+        (s->nr_elem) ++;
+    }
+    else{
+        increase_size(&s);
+        s->arr[s->nr_elem] = entry;
+        (s->nr_elem) ++;
+    }
+}
+
+void delete_snapshot(Snapshot **s)
+{
+    for(int i = 0; i < (*s)->nr_elem; i ++)
+    {
+        delete_cache_entry(&((*s)->arr[i]));
+    }
+    free((*s)->arr);
+    free(*s);
 }
 
 
