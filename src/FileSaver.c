@@ -67,16 +67,12 @@ int main(int argc, char *argv[])
 {
     //de adaugat checks pt argiumente
     int start, end;// start < end
-    char *CACHE_DIR = NULL;
+    char *CACHE_DIR = NULL; 
 
     set_flags(argc, argv, &CACHE_DIR, &start, &end);
 
     for(int i  = start; i < end; i ++)
-    {
-        printf("calls(%s, %s)\n", argv[i], CACHE_DIR);
-        //is_dir_watched(argv[1]);
-        save_snapshot(argv[i], CACHE_DIR);
-    }
+        track(argv[i], CACHE_DIR);
 
     
     return 0;

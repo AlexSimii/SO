@@ -1,7 +1,7 @@
 #include "cache_entry.h"
 
 
-void write_cache_entry_to_file(Cache_entry_class cache_entry, Path_class snap_dir_path, const char *CACHE_DIR)
+void write_cache_entry_to_file(Cache_entry_class cache_entry, Path_class snap_dir_path, char *CACHE_DIR)
 {
     //fac out dir daca nu e
     Path_class cahe_dir_temp = make_path(CACHE_DIR);
@@ -9,7 +9,7 @@ void write_cache_entry_to_file(Cache_entry_class cache_entry, Path_class snap_di
     {
         mkdir(cahe_dir_temp.path, 0700);
     }
-    delete_path(cahe_dir_temp);
+    delete_path(&cahe_dir_temp);
     
     int file_to_write_cache = open_snapshot_file_for_cache(snap_dir_path);
     int nr_of_bytes = strlen(cache_entry.text) * sizeof(char);
@@ -29,12 +29,12 @@ void write_cache_entry_to_file(Cache_entry_class cache_entry, Path_class snap_di
 
 void init_cache_entry(Cache_entry_class *cache_entry)
 {
-    cache_entry->text = (char *)malloc(1 * sizeof(char));
+    cache_entry->text = (char *)malloc(10 * sizeof(char));//excess
     is_null(cache_entry->text, ALOC_TEXT);
     cache_entry->text[0] = '\0';
 }
 
-void get_cache_entry_from_i_node(Cache_entry_class *cache_entry, struct stat i_node, const Path_class dir_path, int depth, int indent)
+void get_cache_entry_from_i_node(Cache_entry_class *cache_entry, struct stat i_node, Path_class dir_path, int depth, int indent)
 {
     init_cache_entry(cache_entry);
 
@@ -63,7 +63,7 @@ void get_cache_entry_from_i_node(Cache_entry_class *cache_entry, struct stat i_n
     edit_cache_entry(cache_entry, dir_path.path, true);//file_name
 }
 
-void edit_cache_entry(Cache_entry_class *cache_entry, const char *new_entry, bool last_entry)
+void edit_cache_entry(Cache_entry_class *cache_entry, char *new_entry, bool last_entry)
 {
     int extra;
     if(!last_entry)
@@ -71,7 +71,7 @@ void edit_cache_entry(Cache_entry_class *cache_entry, const char *new_entry, boo
     else
         extra = 1;// [\n]
 
-    char *temp = (char *)realloc(cache_entry->text, (strlen(cache_entry->text) + strlen(new_entry) + extra) * sizeof(char));
+    char *temp = (char *)realloc(cache_entry->text, (strlen(cache_entry->text) + strlen(new_entry) + extra + 1) * sizeof(char));
     is_null(temp, REALOC_TEXT);
 
     cache_entry->text = temp;
@@ -83,16 +83,27 @@ void edit_cache_entry(Cache_entry_class *cache_entry, const char *new_entry, boo
         strcat(cache_entry->text, "\n");
 }
 
+void make_cache_entry_text(Cache_entry_class *cache_entry, char *text)
+{
+    char *temp = (char *)realloc(cache_entry->text, (strlen(cache_entry->text) + strlen(text) + 1) * sizeof(char));
+    is_null(temp, REALOC_TEXT);
+
+    cache_entry->text = temp;
+
+    strcat(cache_entry->text, text);
+    strcat(cache_entry->text, "\n");
+}
+
 void delete_cache_entry(Cache_entry_class *c)
 {
     if(c->text != NULL)
         free(c->text);
+    c->text = NULL;
 }
-
 
 Snapshot * creeate_snapshot()
 {
-    Snapshot *s = (Snapshot *)malloc(1 * sizeof(Snapshot));
+    Snapshot *s = (Snapshot *)malloc(sizeof(Snapshot));
     is_null(s, ALOC_TEXT);
     s-> arr = (Cache_entry_class *)malloc(sizeof(Cache_entry_class) * SNAPSHOT_CHUNK_SIZE);
     is_null(s->arr, ALOC_TEXT);
@@ -130,8 +141,80 @@ void delete_snapshot(Snapshot **s)
     {
         delete_cache_entry(&((*s)->arr[i]));
     }
-    free((*s)->arr);
-    free(*s);
+    if((*s)->arr != NULL)
+        free((*s)->arr);
+    (*s) -> arr = NULL;
+    if(*s != NULL)
+        free(*s);
+    *s = NULL;
 }
+
+void load_snapshot(Snapshot *loaded, Path_class snap_dir_path)
+{
+    int text_size = LOAD_CHUNK_SIZE + 1;
+
+    char *text = (char *)malloc((sizeof(char) + 1)* LOAD_CHUNK_SIZE);
+    char *chunk = (char *)malloc((sizeof(char) + 1)* LOAD_CHUNK_SIZE);
+
+    is_null(text, ALOC_TEXT);
+    is_null(chunk, ALOC_TEXT);
+
+    text[0] = '\0';
+
+    int filedesc = open_snapshot_read(snap_dir_path);
+    int read_status = read(filedesc, chunk, LOAD_CHUNK_SIZE);
+    while(read_status == LOAD_CHUNK_SIZE)
+    {
+        chunk[LOAD_CHUNK_SIZE] = '\0';
+        strcat(text, chunk);
+        text_size += LOAD_CHUNK_SIZE;
+        char *temp1 = (char *)realloc(text, text_size*sizeof(char));
+        is_null(temp1, REALOC_TEXT);
+        text = temp1;
+        read_status = read(filedesc, chunk, LOAD_CHUNK_SIZE);
+    }
+    if(read_status < 0)
+    {
+        printf("error during reading file %s\n", snap_dir_path.path);
+        exit(EXIT_FAILURE);
+    }
+    if(read_status < LOAD_CHUNK_SIZE)
+    {
+        chunk[read_status] = '\0';
+        strcat(text, chunk);
+    }
+
+
+
+    chunk = strtok(text, "\n");
+    while (chunk != NULL) {
+        Cache_entry_class temp;
+        init_cache_entry(&temp);
+        make_cache_entry_text(&temp, chunk);
+        add_cache_entry(loaded, temp);
+
+        chunk = strtok(NULL, "\n");
+    }
+    if(chunk != NULL)
+        free(chunk);
+    chunk = NULL;
+    
+    if(text != NULL)
+        free(text);
+    text = NULL;
+}
+
+bool is_changed(Snapshot *old, Snapshot *new)
+{
+    if(old->nr_elem != new->nr_elem)
+        return true;
+
+    for(int i = 0; i < old ->nr_elem; i ++)
+        if(strcmp(old->arr[i].text, new->arr[i].text) != 0)
+            return true;
+
+    return false;
+}
+
 
 

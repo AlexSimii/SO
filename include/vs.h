@@ -1,7 +1,6 @@
 #ifndef VERSION_CONTROLLER
     #define VERSION_CONTROLLER
 
-    #define CACHE_ENTRY_SIZE 500
     #define INDENT 4
 
     #include "fileoperations.h"
@@ -29,7 +28,9 @@
         NOTpossible
     };
 
-    enum dir_states is_dir_watched(char *dir_path, const char *CACHE_DIR);
-    void save_snapshot(char *dir_path, const char *CACHE_DIR);
+    enum dir_states is_dir_watched(char *dir_path, char *CACHE_DIR);
+    void save_snapshot(char *dir_path, char *CACHE_DIR);
+    bool are_changes(char *dir_path, char *CACHE_DIR, bool save_newest);
+    void track(char *dir_path, char *CACHE_DIR);
 
 #endif

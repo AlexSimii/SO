@@ -14,8 +14,8 @@
         char *path;
     }Path_class;
 
-    Path_class make_snap_dir_path(const char *dir_path, const char *cahce_dir);
-    Path_class make_path(const char *path);
-    void delete_path(Path_class to_del);
+    Path_class make_snap_dir_path(char *dir_path, char *cahce_dir);
+    Path_class make_path(char *path);
+    void delete_path(Path_class *to_del);
     void expand_path(Path_class * p, char * location_from_p);
 #endif

@@ -8,7 +8,9 @@ in urma rulari o sa fie creat un executabil "filesaver.elf" in directorul SO
 
 
 >./executabil dir1 dir2 ... 
+
 path_cache_file_snapshoturi o sa fie setat pe FileSaverCache
+
 sau
 
 flags 
@@ -17,5 +19,10 @@ flags
 
 -o path_cache_file_snapshoturi
 
-ex: >executabil -o path_cache_file_snapshoturi -d dir1 dir2 ...
-    >executabil -d dir1 dir2 ... -o path_cache_file_snapshoturi
+ex: executabil -o path_cache_file_snapshoturi -d dir1 dir2 ...
+
+    executabil -d dir1 dir2 ... -o path_cache_file_snapshoturi
+
+    >./filesaver.elf -d test_dir -o FileSaverCache
+    >./filesaver.elf -d /home/alex/Desktop/SO/test_dir -o FileSaverCache
+
