@@ -1,20 +1,13 @@
 #include <stdio.h>
+
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include "vs.h"
 
 /* 
 cerinta laborator:
-primesc oricate arg in lin dar nu mai mult de 10
-nicun arg nu se v a repeta -- trebuei sa verific
-prog prodcesasa dor dir, alte doc uri o sa fie ignorate
-logica de captura de aplica turturor arg primite
-prog actualizeaza snapshoturile pe toate dir urile
-
-in cazul in care se vor inregistra schimbari
-se compara cu versiunea veche a snapshotului
-daca exitsa diferente sanpshotul vechi se actualizeaza
-
-pe lanag intrari o sa avem un arg suplimetar care va fi dir e out
-in care o sa fie toat snapshoturile intrarilor in lin d e comanda
+creez proces pt orice pt care are sens
 ./run dir1 dir2 dir3 cevarandom -o outDir
 */
 
@@ -68,12 +61,25 @@ int main(int argc, char *argv[])
     //de adaugat checks pt argiumente
     int start, end;// start < end
     char *CACHE_DIR = NULL; 
+    pid_t main_pid = getpid();
 
     set_flags(argc, argv, &CACHE_DIR, &start, &end);
 
-    for(int i  = start; i < end; i ++)
-        track(argv[i], CACHE_DIR);
+    // for(int i  = start; i < end; i ++)
+    //     track(argv[i], CACHE_DIR);
 
-    
+    for(int i  = start; i < end; i ++)
+        generate_appropiate_process(argv[i], CACHE_DIR, main_pid);
+
+    int return_code = -1;
+    pid_t finished_pid = 0;
+    for(int i = start; i < end; i ++)
+    {
+        finished_pid = wait(&return_code);
+        if(WIFEXITED(return_code))
+            if(WEXITSTATUS(return_code) != HAPPY_CODE)
+                printf("wait pid=%d: code=%d\n", finished_pid, WEXITSTATUS(return_code));
+    }
+
     return 0;
 }

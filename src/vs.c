@@ -1,5 +1,7 @@
 #include "vs.h"
 
+
+
 enum dir_states is_dir_watched(char *dir_path, char *CACHE_DIR)
 {   
     if(dir_path[strlen(dir_path) - 1] == '/')
@@ -133,7 +135,7 @@ void track(char *dir_path, char *CACHE_DIR)
         break;
     case watched:
         if(are_changes(dir_path, CACHE_DIR, true))
-            printf("Changes war found changes in /%s, a new version was saved\n", dir_path);
+            printf("Changes were found changes in /%s, a new version was saved\n", dir_path);
         else
             printf("No changes found in /%s\n", dir_path);
         break;
@@ -145,4 +147,70 @@ void track(char *dir_path, char *CACHE_DIR)
         break;
     }
 }
+
+pid_t generate_appropiate_process(char *dir_path, char *CACHE_DIR, pid_t main_pid)
+{
+    pid_t pid, where_am_i;
+
+    switch (is_dir_watched(dir_path, CACHE_DIR))
+    {
+    case unwatched:
+        printf("Dir %s is untracked, first save was made\n", dir_path);
+        
+        pid = fork();
+        pid_t where_am_i = getpid();
+
+        if(where_am_i != main_pid)//nu sunt in main
+        {
+            //in child pid o sa fie 0
+            if(pid < 0)
+            {
+                printf("Error in fork, unwatched dir %s\n", dir_path);
+                exit(EXIT_FAILURE);
+            }
+            save_snapshot(dir_path, CACHE_DIR);
+            exit(HAPPY_CODE);
+        }
+        else//sunt in main
+        {
+            //printf("pid %d creeated\n", pid);
+            return pid;//returnez procesul dat
+        }
+            
+        break;
+    case watched:
+        pid = fork();
+        where_am_i = getpid();
+
+        if(where_am_i != main_pid)
+        {
+            if(pid < 0)
+            {
+                //printf("Error in fork, watched dir %s\n", dir_path);
+                exit(EXIT_FAILURE);
+            }
+            if(are_changes(dir_path, CACHE_DIR, true))
+                printf("Changes were found changes in /%s, a new version was saved\n", dir_path);
+            else
+                printf("No changes found in /%s\n", dir_path);
+            exit(HAPPY_CODE);
+        }
+        else
+        {
+            //printf("pid %d creeated\n", pid);
+            return pid;
+        }
+        break;
+    case NOTdir:
+        printf("/%s is not a valid dir\n", dir_path);
+        return -1;
+        break;
+    case NOTpossible:
+        printf("Whe provided entry [%s] is  WHAAAT?!?!? \n", dir_path);
+        return -1;
+        break;
+    }
+    exit(SAD_CODE);
+}
+
 

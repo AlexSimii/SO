@@ -2,6 +2,8 @@
     #define VERSION_CONTROLLER
 
     #define INDENT 4
+    #define HAPPY_CODE 200
+    #define SAD_CODE (404 % 255)
 
     #include "fileoperations.h"
     #include "path.h"
@@ -32,5 +34,6 @@
     void save_snapshot(char *dir_path, char *CACHE_DIR);
     bool are_changes(char *dir_path, char *CACHE_DIR, bool save_newest);
     void track(char *dir_path, char *CACHE_DIR);
-
+    pid_t generate_appropiate_process(char *dir_path, char *CACHE_DIR, pid_t main_pid);
+    
 #endif

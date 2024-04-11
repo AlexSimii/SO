@@ -1,14 +1,14 @@
-, 1741154, 16893, 1000, 4096, 1741154, /home/alex/Desktop/SO/test_dir
-    , 1741100, 33204, 1000, 0, 1741100, /home/alex/Desktop/SO/test_dir/file3.txt
-    , 2108874, 16893, 1000, 4096, 2108874, /home/alex/Desktop/SO/test_dir/dir3
-    , 1741104, 33204, 1000, 0, 1741104, /home/alex/Desktop/SO/test_dir/file4.txt
-    , 2109336, 16893, 1000, 4096, 2109336, /home/alex/Desktop/SO/test_dir/dir4
-        , 2104317, 33204, 1000, 0, 2104317, /home/alex/Desktop/SO/test_dir/dir4/ultimateboss.txt
-        , 2109374, 16893, 1000, 4096, 2109374, /home/alex/Desktop/SO/test_dir/dir4/wow
-            , 2103921, 33204, 1000, 0, 2103921, /home/alex/Desktop/SO/test_dir/dir4/wow/boss.txt
-    , 2108298, 16893, 1000, 4096, 2108298, /home/alex/Desktop/SO/test_dir/dir2
-    , 2104465, 16893, 1000, 4096, 2104465, /home/alex/Desktop/SO/test_dir/dir1
-        , 2108299, 33204, 1000, 0, 2108299, /home/alex/Desktop/SO/test_dir/dir1/file1.txt
-    , 2107988, 16893, 1000, 4096, 2107988, /home/alex/Desktop/SO/test_dir/test_it_works
-    , 1741150, 41471, 1000, 4, 1741150, /home/alex/Desktop/SO/test_dir/link_to_dir1
-    , 1741186, 33204, 1000, 0, 1741186, /home/alex/Desktop/SO/test_dir/file2.txt
+, 1741154, 16893, 1000, 4096, 1741154, test_dir
+    , 1741100, 33204, 1000, 0, 1741100, test_dir/file3.txt
+    , 2108874, 16893, 1000, 4096, 2108874, test_dir/dir3
+    , 1741104, 33204, 1000, 0, 1741104, test_dir/file4.txt
+    , 2109336, 16893, 1000, 4096, 2109336, test_dir/dir4
+        , 2104317, 33204, 1000, 0, 2104317, test_dir/dir4/ultimateboss.txt
+        , 2109374, 16893, 1000, 4096, 2109374, test_dir/dir4/wow
+            , 2103921, 33204, 1000, 0, 2103921, test_dir/dir4/wow/boss.txt
+    , 2108298, 16893, 1000, 4096, 2108298, test_dir/dir2
+    , 2104465, 16893, 1000, 4096, 2104465, test_dir/dir1
+        , 2108299, 33204, 1000, 0, 2108299, test_dir/dir1/file1.txt
+    , 2107988, 16893, 1000, 4096, 2107988, test_dir/test_it_works
+    , 1741150, 41471, 1000, 4, 1741150, test_dir/link_to_dir1
+    , 1741186, 33204, 1000, 0, 1741186, test_dir/file2.txt
