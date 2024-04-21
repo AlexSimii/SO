@@ -23,10 +23,11 @@
     struct stat get_i_node(Path_class path);
     bool is_dir(Path_class path);
     bool is_file(Path_class path);
+    bool is_link(Path_class path);
     bool check_dir_is_tracked(char *dir_path, char *cache_dir);
     int open_snapshot_file_for_cache(Path_class p);
     int open_snapshot_read(Path_class p);
     DIR *open_director(Path_class p);
-    
+    bool has_rights(struct stat i_node);
 
 #endif

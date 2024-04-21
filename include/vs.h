@@ -19,7 +19,7 @@
     #include <sys/types.h>
     #include <sys/stat.h>
     #include <unistd.h>
-
+    #include <sys/wait.h>
     //pt open dir
     #include <dirent.h>
 
@@ -33,7 +33,6 @@
     enum dir_states is_dir_watched(char *dir_path, char *CACHE_DIR);
     void save_snapshot(char *dir_path, char *CACHE_DIR);
     bool are_changes(char *dir_path, char *CACHE_DIR, bool save_newest);
-    void track(char *dir_path, char *CACHE_DIR);
     pid_t generate_appropiate_process(char *dir_path, char *CACHE_DIR, pid_t main_pid);
     
 #endif

@@ -184,10 +184,12 @@ void load_snapshot(Snapshot *loaded, Path_class snap_dir_path)
         strcat(text, chunk);
     }
 
-
+    //printf("txt:[\n%s\n]\n",text);
 
     chunk = strtok(text, "\n");
     while (chunk != NULL) {
+        //printf("chunk:[%s]\n",chunk);
+
         Cache_entry_class temp;
         init_cache_entry(&temp);
         make_cache_entry_text(&temp, chunk);
@@ -206,12 +208,18 @@ void load_snapshot(Snapshot *loaded, Path_class snap_dir_path)
 
 bool is_changed(Snapshot *old, Snapshot *new)
 {
+    
     if(old->nr_elem != new->nr_elem)
         return true;
 
     for(int i = 0; i < old ->nr_elem; i ++)
         if(strcmp(old->arr[i].text, new->arr[i].text) != 0)
+        {
+            ///printf("is_changed\n");
+            ///printf("old:[%s]\n", old->arr[i].text);
+            ///printf("new:[%s]\n", new->arr[i].text);
             return true;
+        }
 
     return false;
 }

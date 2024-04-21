@@ -34,8 +34,22 @@ enum dir_states is_dir_watched(char *dir_path, char *CACHE_DIR)
     return NOTpossible;
 }
 
+void call_sctript(Path_class entry)
+{
+    pid_t pid;
+    pid = fork();
+    if(pid == 0)
+    {
+        execl("/home/alex/Desktop/SO/verify_for_malicious.sh", "FS", entry.path, "IsolatedSpaceDirectory",(char *)NULL);
+        printf("NA I vOIE AICI:[%s]\n", entry.path);
+    }
+    else
+        return;
+}
+
 void get_snapshot(const Path_class current_dir, int depth, int indent, Snapshot *snap)
 {
+    int children_made = 0;
     //printf("dir called 1: [%s]\n",current_dir.path);
     struct stat i_node = get_i_node(current_dir);
     //printf("dir called 2: [%s]\n",current_dir.path);
@@ -63,13 +77,33 @@ void get_snapshot(const Path_class current_dir, int depth, int indent, Snapshot 
         else
         {
             struct stat file_i_node = get_i_node(entry);
-            Cache_entry_class file_cache_entry;
-            get_cache_entry_from_i_node(&file_cache_entry, file_i_node, entry, depth + 1, indent);
-            add_cache_entry(snap, file_cache_entry);
+            if(has_rights(file_i_node) == false)
+            {
+                children_made ++;
+                call_sctript(entry);
+
+                int return_code = -1;
+                pid_t finished_pid = 0;
+                for(int i = 0; i < 1; i ++)
+                {
+                    finished_pid = wait(&return_code);
+                    if(return_code < 0)
+                        printf("nasol\n");
+                }
+            }
+            else
+            {   
+                //printf("%s %d\n",entry.path, file_i_node.st_mode);
+                Cache_entry_class file_cache_entry;
+                get_cache_entry_from_i_node(&file_cache_entry, file_i_node, entry, depth + 1, indent);
+                add_cache_entry(snap, file_cache_entry);
+            }
         }
         first_entry = readdir(directory);
         delete_path(&entry);
     }
+
+
 }
 
 void save_snapshot(char *dir_path, char *CACHE_DIR)
@@ -123,29 +157,6 @@ bool are_changes(char *dir_path, char *CACHE_DIR, bool save_newest)
     delete_path(&dir_path_to_save);
 
     return answ;
-}
-
-void track(char *dir_path, char *CACHE_DIR)
-{
-    switch (is_dir_watched(dir_path, CACHE_DIR))
-    {
-    case unwatched:
-        printf("Dir %s is untracked, first save was made\n", dir_path);
-        save_snapshot(dir_path, CACHE_DIR);
-        break;
-    case watched:
-        if(are_changes(dir_path, CACHE_DIR, true))
-            printf("Changes were found changes in /%s, a new version was saved\n", dir_path);
-        else
-            printf("No changes found in /%s\n", dir_path);
-        break;
-    case NOTdir:
-        printf("/%s is not a valid dir\n", dir_path);
-        break;
-    case NOTpossible:
-        printf("Whe provided entry [%s] is  WHAAAT?!?!? \n", dir_path);
-        break;
-    }
 }
 
 pid_t generate_appropiate_process(char *dir_path, char *CACHE_DIR, pid_t main_pid)
